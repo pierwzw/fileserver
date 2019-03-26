@@ -1,4 +1,4 @@
-package com.pier.com.pier.controller;
+package com.pier.controller;
 
 import java.io.*;
 import java.net.URLEncoder;
