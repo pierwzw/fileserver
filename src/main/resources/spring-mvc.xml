@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:p="http://www.springframework.org/schema/p" xmlns:file="http://www.springframework.org/schema/c"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd  
+       http://www.springframework.org/schema/context  
+       http://www.springframework.org/schema/context/spring-context.xsd  
+       http://www.springframework.org/schema/mvc  
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+
+	<!-- 配置扫描的包, exclude使事务起作用 -->
+	<!--<context:component-scan base-package="com.pier" />-->
+	<!-- use-default-filters 只扫描include的-->
+	<context:component-scan base-package="com.pier.*" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+		<!--<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />-->
+	</context:component-scan>
+
+	<context:property-placeholder location="classpath:file.properties"/>
+
+	<!-- 这个是注解驱动 -->
+	<mvc:annotation-driven />
+	<mvc:resources mapping="${mappingpath}/**" location="file:${filepath}/" />
+	<!--<mvc:resources mapping="/resources/static/**" location="/resources/static/"/>-->
+	<mvc:resources mapping="/resources/js/**" location="/resources/js/"/>
+	<mvc:resources mapping="/resources/css/**" location="/resources/css/"/>
+	<mvc:resources mapping="/resources/font/**" location="/resources/font/"/>
+
+	<!--<mvc:resources mapping="/resources/**/" location="/resources/"/>-->
+
+	<!--&lt;!&ndash; 有些注解不属于spring,需要下面的声明 &ndash;&gt;有了<context:component-scan/>就不用了
+	<context:annotation-config />-->
+
+	<!-- 在Spring MVC上下文中定义一个org.springframework.web.servlet.resource.DefaultServletHttpRequestHandler，
+	它会像一个检查员，对进入DispatcherServlet的URL进行筛查，如果发现是静态资源的请求，就将该请求转由Web应用服务器默认的Servlet处理，
+	如果不是静态资源的请求，才由DispatcherServlet继续处理。-->
+	<mvc:default-servlet-handler />
+
+    <!-- 配置视图解析器 -->
+	<!-- InternalResourceViewResolver为UrlBasedViewResolver的子类 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- redirectContextRelative 的默认值为 true -->
+		<property name="redirectContextRelative" value="true"></property>
+		<property name="prefix" value="/WEB-INF/jsp/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+
+	<!-- 文件上传 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" >
+		<!--   		 p:defaultEncoding="UTF-8"
+                           p:maxUploadSize="1073741824"  最大1Gb
+                        p:uploadTempDir="fileUpload/temp"   -->
+		<property name="defaultEncoding" value="utf-8"></property>
+		<property name="maxUploadSize" value="1073741824"></property>
+        <!-- 内存中的最大值 -->
+        <property name="maxInMemorySize" value="40960" />
+    </bean>
+	<!--<aop:aspectj-autoproxy/>-->
+
+	<!--&lt;!&ndash; 自定义拦截器&ndash;&gt;
+	<mvc:interceptors>
+		   &lt;!&ndash; 日志拦截器 &ndash;&gt;
+		   <mvc:interceptor>
+				<mvc:mapping path="/**" />
+				<mvc:exclude-mapping path="/resource/**" />
+				<bean class="com.pier.interceptor.MyInterceptor" />
+		   </mvc:interceptor>
+		&lt;!&ndash; 只配下面这个是不行的 &ndash;&gt;
+			<mvc:interceptor>
+				<mvc:mapping path="/*"/>
+				<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" p:paramName="lang"/>
+			</mvc:interceptor>
+	</mvc:interceptors>-->
+</beans>
